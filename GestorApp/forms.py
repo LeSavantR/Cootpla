@@ -113,11 +113,7 @@ class GuardarSede(forms.ModelForm):
 #    tipo = forms.ChoiceField(choices=[('1', 'Terminal'), ('2', 'Oficina'), ('3', 'Paradero')])
 ###
 class GuardarVehiculo(forms.ModelForm):
-    propietario = forms.CharField(max_length="100")
-    # numero_veh = forms.CharField(max_length="5")
-    # asientos = forms.CharField(max_length="2")
-    # estado = forms.ChoiceField(choices=[('1','Activo'),('2','Inactivo')])
-
+    placa_veh = forms.CharField(max_length=6)
     class Meta:
         model = Vehiculo
         fields = ('propietario', 'numero_veh', 'placa_veh', 'asientos', 'estado')
@@ -143,15 +139,17 @@ class GuardarVehiculo(forms.ModelForm):
         # print(int(id) > 0)
         try:
             if int(id) > 0:
-               vehiculo_ = Vehiculo.objects.exclude(id=id).get(placa_veh=placa_veh)
+               placa_ = Vehiculo.objects.exclude(id=id).get(placa_veh=placa_veh)
             else:
-               vehiculo_ = Vehiculo.objects.get(placa_veh=placa_veh)
+               placa_ = Vehiculo.objects.get(placa_veh=placa_veh)
         except:
-            return placa_veh.upper()
-            # raise forms.ValidationError(f"{bus_number} Category Already Exists.")
+            return placa_veh
+            #  placa_veh.upper()   #si me arroja mayus no me valida la placa
         raise forms.ValidationError(f"{placa_veh}: Esta placa ya existe en sistema")
 
-
+    def clean_placa_veh(self):
+        placa_veh = self.cleaned_data['placa_veh']
+        return placa_veh.upper()
 
 class GuardarProgramacion(forms.ModelForm):
     codigo = forms.CharField(max_length="250")
@@ -191,7 +189,6 @@ class GuardarProgramacion(forms.ModelForm):
 
 
 class GuardarEncomienda(forms.ModelForm):
-    programacion = forms.CharField()
 
     class Meta:
         model = Encomienda

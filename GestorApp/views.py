@@ -1,9 +1,9 @@
 # gestion de usuarios y accesos en inglés: clases y variables propias de las librerias
-import json
+
 from datetime import datetime
 
 from django.shortcuts import render,redirect
-
+import json
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
@@ -48,8 +48,8 @@ def login_user(request):
 def inicio(request: HttpRequest):
     context['page_title'] = 'Inicio'
     #tabla de contenido o dashboard inicio
-    context['vehiculos'] = Vehiculo.objects.count()
     context['encomiendas'] = Encomienda.objects.count()
+    context['vehiculos'] = Vehiculo.objects.count()
     context['programaciones'] = Programacion.objects.filter(estado= 1, programacion__gt = datetime.today()).count()
     context['username'] = User.objects.count()
 
@@ -225,8 +225,27 @@ def vehiculo(request: HttpRequest):
 
     return render(request, 'gestion/vehiculo.html', context)
 
+@login_required
+def guardar_vehiculo(request:HttpRequest):
+    resp = {'status': 'failed', 'msg': ''}
+    if request.method == 'POST':
+        form = GuardarVehiculo(data=request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'El vehículo se ha guardado exitosamente')
+            resp['status'] = 'success'
+        else:
+            for fields in form:
+                for error in fields.errors:
+                    resp['msg'] += str(error + "<br>")
+    else:
+        resp['msg'] = 'No se han guardado datos.'
+    return HttpResponse(json.dumps(resp), content_type='application/json')
+
+
 
 #gestor intermpsl
+
 # @login_required
 # def guardar_vehiculo(request):
 #     resp = {'status': 'failed', 'msg': ''}
@@ -252,30 +271,30 @@ def vehiculo(request: HttpRequest):
 #     return HttpResponse(json.dumps(resp), content_type='application/json')
 
 
-@login_required
-def guardar_vehiculo(request: HttpRequest):
-     resp = {'status': 'failed', 'msg': ''}
-     if request.method == 'POST':
-         id_value = request.POST.get('id')
-         if id_value and id_value.isnumeric():
-            vehiculo = Vehiculo.objects.get(pk=id_value)
-         else:
-             vehiculo = None
-         if vehiculo is None:
-             form = GuardarVehiculo(request.POST)
-         else:
-             form = GuardarVehiculo(request.POST, instance=vehiculo)
-         if form.is_valid():
-             form.save()
-             messages.success(request, 'El Vehiculo se ha guardado exitosamente')
-             resp['status'] = 'success'
-         else:
-             for fields in form:
-                 for error in fields.errors:
-                     resp['msg'] += str(error + "<br>")
-     else:
-         resp['msg'] = 'No se han guardado datos.'
-     return HttpResponse(json.dumps(resp), content_type='application/json')
+# @login_required
+# def guardar_vehiculo(request: HttpRequest):
+#      resp = {'status': 'failed', 'msg': ''}
+#      if request.method == 'POST':
+#          id_value = request.POST.get('id')
+#          if id_value and id_value.isnumeric():
+#             vehiculo = Vehiculo.objects.get(pk=id_value)
+#          else:
+#              vehiculo = None
+#          if vehiculo is None:
+#              form = GuardarVehiculo(request.POST)
+#          else:
+#              form = GuardarVehiculo(request.POST, instance=vehiculo)
+#          if form.is_valid():
+#              form.save()
+#              messages.success(request, 'El Vehiculo se ha guardado exitosamente')
+#              resp['status'] = 'success'
+#          else:
+#              for fields in form:
+#                  for error in fields.errors:
+#                      resp['msg'] += str(error + "<br>")
+#      else:
+#          resp['msg'] = 'No se han guardado datos.'
+#      return HttpResponse(json.dumps(resp), content_type='application/json')
 
 
 @login_required
@@ -291,6 +310,7 @@ def adm_vehiculo(request: HttpRequest, pk: str | None = None):
         context['vehiculo'] = {}
 
     return render(request, 'gestion/adm_vehiculo.html', context)
+
 
 @login_required
 def eliminar_vehiculo(request: HttpRequest):
@@ -329,10 +349,18 @@ def programacion(request: HttpRequest):
 
 
 @login_required
-def guardar_programacion(request: HttpRequest):
+def guardar_programacion(request):
     resp = {'status':'failed','msg':''}
     if request.method == 'POST':
-        form = GuardarProgramacion(request.POST)
+        if (request.POST['id']).isnumeric():
+            programacion = Programacion.objects.get(pk=request.POST['id'])
+        else:
+            programacion = None
+            if programacion is None:
+                form = GuardarProgramacion(request.POST)
+            else:
+                form = GuardarProgramacion(request.POST,instance=programacion)
+
         if form.is_valid():
             form.save()
             messages.success(request, 'La Programación se ha guardado exitosamente.')
@@ -345,6 +373,8 @@ def guardar_programacion(request: HttpRequest):
     else:
         resp['msg'] = 'No se han guardado datos.'
     return HttpResponse(json.dumps(resp), content_type = 'application/json')
+
+
 
 
 
@@ -406,7 +436,7 @@ def encomienda(request: HttpRequest):
     return render(request, 'gestion/encomienda.html', context)
 
 @login_required
-def guardar_encomienda(request: HttpRequest):
+def guardar_encomienda(request):
     resp = {'status':'failed','msg':''}
     if request.method == 'POST':
         if (request.POST['id']).isnumeric():
@@ -417,9 +447,9 @@ def guardar_encomienda(request: HttpRequest):
                 form = GuardarEncomienda(request.POST)
             else:
                 form = GuardarEncomienda(request.POST, instance=encomienda)
-                ##421
+                ##  error
             if form.is_valid():
-                form.save()
+                encomienda = form.save()
                 messages.success(request, 'La encomienda ha guardado exitosamente')
                 resp['status'] = 'success'
             else:
@@ -445,8 +475,6 @@ def adm_encomienda(request: HttpRequest, pk: str | None = None):
         context['encomienda'] = {}
 
     return render(request, 'gestion/adm_encomienda.html', context)
-
-
 
 
 
