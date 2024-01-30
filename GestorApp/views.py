@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 
 from django.shortcuts import render,redirect
-import json
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
