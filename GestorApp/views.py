@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from django.shortcuts import render,redirect
+
 import json
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.db.models import Q
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 
 from .forms import ActualizarContrasena, ActualizarPerfil, GuardarSede, GuardarVehiculo,GuardarEncomienda,GuardarProgramacion,RegistrarUsuario
@@ -243,60 +243,6 @@ def guardar_vehiculo(request:HttpRequest):
     return HttpResponse(json.dumps(resp), content_type='application/json')
 
 
-
-#gestor intermpsl
-
-# @login_required
-# def guardar_vehiculo(request):
-#     resp = {'status': 'failed', 'msg': ''}
-#     if request.method == 'POST':
-#         if (request.POST['id']).isnumeric():
-#             vehiculo = Vehiculo.objects.get(pk=request.POST['id'])
-#         else:
-#             vehiculo = None
-#         if vehiculo is None:
-#             form = GuardarVehiculo(request.POST)
-#         else:
-#             form = GuardarVehiculo(request.POST, instance=bus)
-#         if form.is_valid():
-#             form.save()
-#             messages.success(request, 'El Bus se ha guardado exitosamente')
-#             resp['status'] = 'success'
-#         else:
-#             for fields in form:
-#                 for error in fields.errors:
-#                     resp['msg'] += str(error + "<br>")
-#     else:
-#         resp['msg'] = 'No se han guardado datos.'
-#     return HttpResponse(json.dumps(resp), content_type='application/json')
-
-
-# @login_required
-# def guardar_vehiculo(request: HttpRequest):
-#      resp = {'status': 'failed', 'msg': ''}
-#      if request.method == 'POST':
-#          id_value = request.POST.get('id')
-#          if id_value and id_value.isnumeric():
-#             vehiculo = Vehiculo.objects.get(pk=id_value)
-#          else:
-#              vehiculo = None
-#          if vehiculo is None:
-#              form = GuardarVehiculo(request.POST)
-#          else:
-#              form = GuardarVehiculo(request.POST, instance=vehiculo)
-#          if form.is_valid():
-#              form.save()
-#              messages.success(request, 'El Vehiculo se ha guardado exitosamente')
-#              resp['status'] = 'success'
-#          else:
-#              for fields in form:
-#                  for error in fields.errors:
-#                      resp['msg'] += str(error + "<br>")
-#      else:
-#          resp['msg'] = 'No se han guardado datos.'
-#      return HttpResponse(json.dumps(resp), content_type='application/json')
-
-
 @login_required
 def adm_vehiculo(request: HttpRequest, pk: str | None = None):
     context['page_title'] = "Gestión de Buses"
@@ -349,18 +295,17 @@ def programacion(request: HttpRequest):
 
 
 @login_required
-def guardar_programacion(request):
+def guardar_programacion(request: HttpRequest):
     resp = {'status':'failed','msg':''}
     if request.method == 'POST':
         if (request.POST['id']).isnumeric():
             programacion = Programacion.objects.get(pk=request.POST['id'])
         else:
             programacion = None
-            if programacion is None:
+        if programacion is None:
                 form = GuardarProgramacion(request.POST)
-            else:
-                form = GuardarProgramacion(request.POST,instance=programacion)
-
+        else:
+            form = GuardarProgramacion(request.POST,instance=programacion)
         if form.is_valid():
             form.save()
             messages.success(request, 'La Programación se ha guardado exitosamente.')
@@ -372,19 +317,15 @@ def guardar_programacion(request):
                     resp['msg'] += str(error + "<br>")
     else:
         resp['msg'] = 'No se han guardado datos.'
-    return HttpResponse(json.dumps(resp), content_type = 'application/json')
-
-
-
-
+    return HttpResponse(json.dumps(resp), content_type='application/json')
 
 
 
 @login_required
 def adm_programacion(request: HttpRequest, pk: str | None = None):
     context['page_title'] = "Gestión Programación"
-    vehiculos = Vehiculo.objects.filter(estado=1).all()
     sedes = Sede.objects.all()
+    vehiculos = Vehiculo.objects.filter(estado=1).all()
     conductores = Conductor.objects.filter(estado=1).all()
     context['vehiculos'] = vehiculos
     context['sedes'] = sedes
@@ -437,29 +378,40 @@ def encomienda(request: HttpRequest):
 
 @login_required
 def guardar_encomienda(request):
-    resp = {'status':'failed','msg':''}
-    if request.method == 'POST':
-        if (request.POST['id']).isnumeric():
-            encomienda = Encomienda.objects.get(pk=request.POST['id'])
-        else:
-            encomienda = None
-            if encomienda is None:
-                form = GuardarEncomienda(request.POST)
-            else:
-                form = GuardarEncomienda(request.POST, instance=encomienda)
-                ##  error
-            if form.is_valid():
-                encomienda = form.save()
-                messages.success(request, 'La encomienda ha guardado exitosamente')
-                resp['status'] = 'success'
-            else:
-                for fields in form:
-                    for error in fields.errors:
-                        resp['msg'] += str(error + "<br>")
+
+    resp = {'status': 'failed', 'msg': ''}
+    print(f"datos: {request}")
+    form = GuardarEncomienda(data=request.POST)
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'La Encomienda se ha guardado exitosamente')
+        resp['status'] = 'success'
     else:
         resp['msg'] = 'No se han guardado datos.'
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
+
+
+# def guardar_encomienda(request):
+#      resp = {'status':'failed','msg':''}
+#      if request.method == "POST":
+#          form= GuardarEncomienda(request.POST)
+#          if form.is_valid():
+#            form.save()
+#            messages.success(request, 'La Programación se ha guardado exitosamente.')
+#            resp['status'] = 'success'
+#
+#          else:
+#             print("Error")
+#       else:
+#
+#         form= GuardarProgramacion()
+#     context={
+#
+#         'form':form
+#     }
+
+#    return HttpResponse(json.dumps(resp), content_type='application/json')
 
 
 
@@ -494,8 +446,6 @@ def eliminar_encomienda(request: HttpRequest):
         resp['msg'] = 'Encomienda no se pudo eliminar'
     return HttpResponse(json.dumps(resp), content_type="application/json")
 
-
-##----###
 
 
 def buscar_programado(request: HttpRequest):

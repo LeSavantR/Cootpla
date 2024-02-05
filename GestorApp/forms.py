@@ -108,10 +108,6 @@ class GuardarSede(forms.ModelForm):
         raise forms.ValidationError(f"{sede} Sede ya existente en el sistema.")
 
 
-##
-#    sede = forms.CharField(max_length="25")
-#    tipo = forms.ChoiceField(choices=[('1', 'Terminal'), ('2', 'Oficina'), ('3', 'Paradero')])
-###
 class GuardarVehiculo(forms.ModelForm):
     placa_veh = forms.CharField(max_length=6)
     class Meta:
@@ -147,7 +143,7 @@ class GuardarVehiculo(forms.ModelForm):
             #  placa_veh.upper()   #si me arroja mayus no me valida la placa
         raise forms.ValidationError(f"{placa_veh}: Esta placa ya existe en sistema")
 
-    def clean_placa_veh(self):
+    def clean_placa_mayusc(self):
         placa_veh = self.cleaned_data['placa_veh']
         return placa_veh.upper()
 
@@ -156,7 +152,6 @@ class GuardarProgramacion(forms.ModelForm):
     programacion = forms.CharField()
     conductor = forms.ModelChoiceField(queryset=Conductor.objects.all(), required=True)
     estado =forms.ChoiceField(choices=[('0','Cancelado'),('1', 'Programado'),('2', 'Despachado')])
-
 
     class Meta:
         model = Programacion
@@ -187,11 +182,9 @@ class GuardarProgramacion(forms.ModelForm):
 
 
 
-
 class GuardarEncomienda(forms.ModelForm):
-
+    programacion = forms.CharField()
     class Meta:
         model = Encomienda
         fields = ('programacion', 'nombre_envio', 'cedula_envio', 'telefono_envio', 'nombre_recibido','cedula_recibido','telefono_recibido','costo_envio','estado',)
-
 
