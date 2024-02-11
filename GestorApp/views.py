@@ -1,11 +1,13 @@
 # gestion de usuarios y accesos en inglés: clases y variables propias de las librerias
 
+import json
 from datetime import datetime
 
-
-import json
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth import (
+    authenticate, login, logout,
+    update_session_auth_hash
+)
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.management import call_command
@@ -13,8 +15,15 @@ from django.db.models import Q
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 
-from .forms import ActualizarContrasena, ActualizarPerfil, GuardarSede, GuardarVehiculo,GuardarEncomienda,GuardarProgramacion,RegistrarUsuario
-from .models import Vehiculo, Conductor, Encomienda, Programacion, Propietario, Sede
+from .forms import (
+    ActualizarContrasena, ActualizarPerfil, GuardarEncomienda,
+    GuardarProgramacion, GuardarSede, GuardarVehiculo,
+    RegistrarUsuario
+)
+from .models import (
+    Conductor, Encomienda, Programacion, Propietario, Sede,
+    Vehiculo
+)
 
 context = {
     'page_title': 'Visor de Viajes Intermunicipales || Cootpla',
@@ -53,20 +62,17 @@ def inicio(request: HttpRequest):
     context['programaciones'] = Programacion.objects.filter(estado= 1, programacion__gt = datetime.today()).count()
     context['username'] = User.objects.count()
 
-    # labels = []
-    # data = []
-    #
-    # queryset = Vehiculos.objects.order_by('estado')
-    # for veh_c in queryset:
-    #     if veh_c.estado == '1':
-    #         labels.append(veh_c.numero_veh)
-    #         data.append(veh_c.asientos)
-    #
-    # context = {
-    #     'labels': labels,
-    #     'data': data,
-    # }
+    labels = []
+    data = []
 
+    queryset = Vehiculo.objects.order_by('estado')
+    for veh_c in queryset:
+        if veh_c.estado == '1':
+            labels.append(veh_c.numero_veh)
+            data.append(veh_c.asientos)
+
+    context['labels'] = labels
+    context['data'] = data
 
     return render(request,'core/inicio.html',context)
 
@@ -376,18 +382,22 @@ def encomienda(request: HttpRequest):
     context['semaforo_3'] = semaforo_3
     return render(request, 'gestion/encomienda.html', context)
 
-@login_required
-def guardar_encomienda(request):
 
-    resp = {'status': 'failed', 'msg': ''}
-    print(f"datos: {request}")
+@login_required
+def guardar_encomienda(request: HttpRequest):
+    resp = {
+        'status': 'failed',
+        'msg': ''
+    }
+
     form = GuardarEncomienda(data=request.POST)
+
     if form.is_valid():
         form.save()
         messages.success(request, 'La Encomienda se ha guardado exitosamente')
         resp['status'] = 'success'
-    else:
-        resp['msg'] = 'No se han guardado datos.'
+
+    resp['msg'] = 'No se han guardado datos.'
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
 

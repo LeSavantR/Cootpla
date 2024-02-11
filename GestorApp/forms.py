@@ -183,8 +183,12 @@ class GuardarProgramacion(forms.ModelForm):
 
 
 class GuardarEncomienda(forms.ModelForm):
-    programacion = forms.CharField()
+    # programacion = forms.CharField()
     class Meta:
         model = Encomienda
-        fields = ('programacion', 'nombre_envio', 'cedula_envio', 'telefono_envio', 'nombre_recibido','cedula_recibido','telefono_recibido','costo_envio','estado',)
+        fields = (
+            'programacion', 'nombre_envio', 'cedula_envio',
+            'telefono_envio', 'nombre_recibido','cedula_recibido',
+            'telefono_recibido','costo_envio','estado',
+        )
 
