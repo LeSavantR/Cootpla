@@ -25,21 +25,22 @@ SECRET_KEY = 'django-insecure-dvjkt5fis7g@&68z@f0@#*m4ubh^pq@-se&-6(7vq1zo%b@e*n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    
-     'django.contrib.humanize',   # pip install humanize  4.9.0
+
+
+    'django.contrib.humanize',   # pip install humanize  4.9.0
 
     'GestorApp',
     'dbbackup',  # pip install django-dbbackup  4.1.0

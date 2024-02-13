@@ -1,7 +1,7 @@
 {% extends "core/base.html" %}
 {% block Contenido %}
 
-<div class="content-wrapper" style="min-height: 1604.44px; margin-left:0;">
+<div class="content-wrapper" style="min-height: 1206.44px; margin-left:8px;">
 
     <section class="content-header">
 
@@ -9,25 +9,34 @@
 
     <section class="content">
         <div class="error-page">
-            <h2 class="headline text-warning">404</h2>
+            <h1 class="headline text-warning">404</h1>
             <div class="error-content">
-                <h3><i class="fas fa-exclamation-triangle text-warning"></i> Advertencia: Página no encontrada.</h3>
-                <p>
-                    No se encontró la pagina ingresada <strong> </strong>
-                   puedes <a href="{% url 'inicio' %}"> retornar </a> vuelva al inicio e ingrese sus credenciales.
+                <h3><i class="fa fa-exclamation-triangle text-warning"></i> Advertencia: Página no encontrada.</h3>
+                <p> <strong> No se encontró la página ingresada. Regrese de nuevo a</strong>
+                    <a href="{% url 'inicio' %}"> Inicio </a>.
                 </p>
-                <form class="search-form">
-                    <div class="input-group">
-                        <input type="text" name="search" class="form-control" placeholder="Buscar...">
-                        <div class="input-group-append">
-                            <button type="submit" name="submit" class="btn btn-warning"><i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item active" aria-current="page">Recuerde que el sitio esta diseñado para consultar sobre nuestra programación:</li>
+                    </ol>
+                </nav>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'inicio' %}">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'buscar-viaje-programado' %}">Buscar Viaje</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'viajes-programados-pagina' %}">Viajes Programados</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'contacto' %}">Contacto</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Para todos nuestros usuarios.</li>
+                    </ol>
+                </nav>
 
-                </form>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'inicio' %}">Inicio</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Logeo(Usuarios internos).</li>
+                    </ol>
+                </nav>
             </div>
-
         </div>
 
     </section>

@@ -61,64 +61,65 @@
         </div>
     </div>
     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-            <div class="card rounded-0 shadow border-danger text-start summary-card my-3">
-                <div class="card-body">
-                    <div class="d-flex w-100">
-                        <div class="col-8 pe-2">
-                            <div class="summary-title fs-5 border-bottom">Usuarios</div>
-                            <div class="summary-count text-end fw-bolder mt-3 px-4">{{ username }}</div>
-                        </div>
-                        <div class="col-4">
-                            <div class="summary-icon p-3 rounded border text-center bg-gradient bg-light">
-                                <i class="fa fa-user fa-2x"></i>
-                            </div>
+        <div class="card rounded-0 shadow border-danger text-start summary-card my-3">
+            <div class="card-body">
+                <div class="d-flex w-100">
+                    <div class="col-8 pe-2">
+                        <div class="summary-title fs-5 border-bottom">Usuarios</div>
+                        <div class="summary-count text-end fw-bolder mt-3 px-4">{{ username }}</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="summary-icon p-3 rounded border text-center bg-gradient bg-light">
+                            <i class="fa fa-user fa-2x"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="card-body">
-        <div class="row justify-content-center justify-content-x-start">
-            <div class="col-sm-3">
-                <h5>Capacidad por vehiculo</h5>
-                <canvas id="myChart" width="35" height="55"></canvas>
-                <script>
-                    var ctx = document.getElementById('myChart').getContext('2d');
-                    var myChart = new Chart(ctx, {
-                        type: 'pie',
-                        data: {
-                            datasets: [{
-                                data: {{ data|safe}},
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 1)',
-                                    'rgba(54, 162, 235, 1)',
-                                    'rgba(255, 206, 86, 1)',
-                                    'rgba(75, 192, 192, 1)',
-                                    'rgb(105,114,114)',
-                                ],
-                                borderWidth: 1
-                            }],
-                            labels: {{ labels|safe }}
-                        },
-                    });
-                </script>
-            </div>
-        </div>
-
     </div>
-
-    <div class="container">
-        {% else %}
+    <!--    Gráfico -->
+    <div class="card">
+        <div class="card-title">
+            <h5 class="card-title text-center">Cantidad de asientos por bus disponible</h5>
+         </div>
+        </div>
         <div class="card-body">
-            <div class="container-fluid">
-                ### RELLENAR ###
+            <div class="d-flex justify-content-center">
+
+                <div class="col-md-2 align-content-center">
+                    <canvas id="myChart" width="22" height="22"></canvas>
+                    <script>
+                        var ctx = document.getElementById('myChart').getContext('2d');
+                        var myChart = new Chart(ctx, {
+                                type: 'pie',
+                                data: {
+                                    datasets: [{
+                                        data: {{ data|safe}},
+                            backgroundColor: [
+                            'rgb(224,18,62)',
+                            'rgb(60,96,57)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgb(75,102,192)',
+                            'rgb(105,114,114)',
+                        ],
+                            borderWidth:2
+                        }],
+                        labels: {{ labels|safe }}
+                        },
+                        });
+                    </script>
+                </div>
+               <div class=""> <br> <span class="badge bg-dark">Vehículos identificadospor Número Interno</span> </div>
+
             </div>
         </div>
-        {% endif %}
     </div>
 
+    <!--   / Gráfico -->
+    {% endif %}
+</div>
 </section>
 
-
-</div> {% endblock Contenido %}
+</div>
+{% endblock Contenido %}

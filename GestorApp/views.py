@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.db.models import Q
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 
 from .forms import (
@@ -59,7 +59,7 @@ def inicio(request: HttpRequest):
     #tabla de contenido o dashboard inicio
     context['encomiendas'] = Encomienda.objects.count()
     context['vehiculos'] = Vehiculo.objects.count()
-    context['programaciones'] = Programacion.objects.filter(estado= 1, programacion__gt = datetime.today()).count()
+    context['programaciones'] = Programacion.objects.filter(programacion__gt= datetime.today()).count()
     context['username'] = User.objects.count()
 
     labels = []
@@ -383,45 +383,45 @@ def encomienda(request: HttpRequest):
     return render(request, 'gestion/encomienda.html', context)
 
 
-@login_required
-def guardar_encomienda(request: HttpRequest):
-    resp = {
-        'status': 'failed',
-        'msg': ''
-    }
-
-    form = GuardarEncomienda(data=request.POST)
-
-    if form.is_valid():
-        form.save()
-        messages.success(request, 'La Encomienda se ha guardado exitosamente')
-        resp['status'] = 'success'
-
-    resp['msg'] = 'No se han guardado datos.'
-
-    return HttpResponse(json.dumps(resp), content_type='application/json')
-
-
-# def guardar_encomienda(request):
-#      resp = {'status':'failed','msg':''}
-#      if request.method == "POST":
-#          form= GuardarEncomienda(request.POST)
-#          if form.is_valid():
-#            form.save()
-#            messages.success(request, 'La Programación se ha guardado exitosamente.')
-#            resp['status'] = 'success'
-#
-#          else:
-#             print("Error")
-#       else:
-#
-#         form= GuardarProgramacion()
-#     context={
-#
-#         'form':form
+# @login_required
+# def guardar_encomienda(request: HttpRequest):
+#     resp = {
+#         'status': 'failed',
+#         'msg': ''
 #     }
+#     #print(f"datos: {request}")
+#
+#     form = GuardarEncomienda(data=request.POST)
+#
+#     if form.is_valid():
+#         form.save()
+#         messages.success(request, 'La Encomienda se ha guardado exitosamente')
+#         resp['status'] = 'success'
+#
+#     resp['msg'] = 'No se han guardado datos.'
+#
+#     return HttpResponse(json.dumps(resp), content_type='application/json')
 
-#    return HttpResponse(json.dumps(resp), content_type='application/json')
+@login_required
+def guardar_encomienda(request):
+     resp = {'status':'failed','msg':''}
+     if request.method == "POST":
+         form= GuardarEncomienda(request.POST)
+         if form.is_valid():
+           form.save()
+           messages.success(request, 'La Encomienda se ha guardado exitosamente.')
+           resp['status'] = 'success'
+
+         else:
+            print("Error")
+     else:
+
+        form= GuardarProgramacion()
+        context ={
+            'form':form
+        }
+
+     return HttpResponse(json.dumps(resp), content_type='application/json')
 
 
 
@@ -447,7 +447,7 @@ def eliminar_encomienda(request: HttpRequest):
         try:
             encomienda = Encomienda.objects.get(id=request.POST['id'])
             encomienda.delete()
-            messages.success(request, 'Encomienda guardada exitosamente.')
+            messages.success(request, 'Encomienda eliminada exitosamente.')
             resp['status'] = 'success'
         except Encomienda.DoesNotExist as err:
             resp['msg'] = 'Encomienda no se pudo eliminar'
@@ -487,7 +487,6 @@ def viajes_programados(request: HttpRequest):
 
     return render(request, 'busqueda/viajes_programados.html', context)
 
-
 def base(request: HttpRequest):
     call_command('dbbackup')
     return HttpResponse('db creada')
@@ -496,3 +495,8 @@ def base(request: HttpRequest):
 def contacto(request: HttpRequest):
     context={}
     return render(request, 'core/contacto.html', context)
+
+
+def error_404(request, exception):
+    data = {"name": "ThePythonDjango.com"}
+    return render(request,'core/error_404.html', data)
