@@ -52,7 +52,7 @@ urlpatterns = [
     path('viajes_programados',views.viajes_programados,name='viajes-programados-pagina'),
     path('buscar_programado', views.buscar_programado, name='buscar-viaje-programado'),
 
-    # path('', views.base),
+    path('', views.base),
 
     path('contacto', views.contacto, name="contacto"),
 ]

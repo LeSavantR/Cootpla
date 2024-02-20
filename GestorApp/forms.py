@@ -58,6 +58,7 @@ class ActualizarPerfil(UserChangeForm):
     last_name = forms.CharField(max_length=250, help_text="Asignar  un apellido para este usuario es requerido.")
     current_password = forms.CharField(max_length=250)
 
+
     class Meta:
         model = User
         fields = ('email', 'username', 'first_name', 'last_name')
@@ -168,7 +169,7 @@ class GuardarProgramacion(forms.ModelForm):
                 codigo = ''
         else:
             codigo = ''
-        pref = datetime.today().strftime('%Y%m%d')
+        pref = datetime.today().strftime('%Y%m%d')   #variable a comparar para validar
         codigo = str(1).zfill(4)
         while True:
             prog = Programacion.objects.filter(codigo=str(pref + codigo)).count()
@@ -183,7 +184,7 @@ class GuardarProgramacion(forms.ModelForm):
 
 
 class GuardarEncomienda(forms.ModelForm):
-    # programacion = forms.CharField()
+    #programacion = forms.CharField()
     class Meta:
         model = Encomienda
         fields = (
